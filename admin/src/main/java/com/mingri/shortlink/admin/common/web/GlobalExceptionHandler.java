@@ -1,4 +1,4 @@
-package com.mingri.shortlink.admin.web;
+package com.mingri.shortlink.admin.common.web;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ReflectUtil;

@@ -1,7 +1,7 @@
-package com.mingri.shortlink.admin.convention.result;
+package com.mingri.shortlink.admin.common.convention.result;
 
-import com.mingri.shortlink.admin.convention.errorcode.BaseErrorCode;
-import com.mingri.shortlink.admin.convention.exception.AbstractException;
+import com.mingri.shortlink.admin.common.convention.errorcode.BaseErrorCode;
+import com.mingri.shortlink.admin.common.convention.exception.AbstractException;
 
 import java.util.Optional;
 

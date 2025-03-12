@@ -1,6 +1,6 @@
 package com.mingri.shortlink.admin.common.enums;
 
-import com.mingri.shortlink.admin.convention.errorcode.IErrorCode;
+import com.mingri.shortlink.admin.common.convention.errorcode.IErrorCode;
 
 /**
  * 用户错误码

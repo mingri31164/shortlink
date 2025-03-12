@@ -1,7 +1,7 @@
-package com.mingri.shortlink.admin.convention.exception;
+package com.mingri.shortlink.admin.common.convention.exception;
 
-import com.mingri.shortlink.admin.convention.errorcode.BaseErrorCode;
-import com.mingri.shortlink.admin.convention.errorcode.IErrorCode;
+import com.mingri.shortlink.admin.common.convention.errorcode.BaseErrorCode;
+import com.mingri.shortlink.admin.common.convention.errorcode.IErrorCode;
 
 /**
  * 客户端异常

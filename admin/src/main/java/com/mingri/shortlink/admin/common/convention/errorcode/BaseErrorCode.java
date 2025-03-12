@@ -1,4 +1,4 @@
-package com.mingri.shortlink.admin.convention.errorcode;
+package com.mingri.shortlink.admin.common.convention.errorcode;
 
 /**
  * 基础错误码定义

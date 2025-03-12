@@ -1,4 +1,4 @@
-package com.mingri.shortlink.admin.convention.result;
+package com.mingri.shortlink.admin.common.convention.result;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
