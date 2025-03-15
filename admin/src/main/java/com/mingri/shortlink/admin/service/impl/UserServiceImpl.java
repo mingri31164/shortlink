@@ -48,6 +48,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private final RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
     private final RedissonClient redissonClient;
     private final StringRedisTemplate stringRedisTemplate;
+    private final GroupServiceImpl groupService;
 
     @Override
     public UserRespDTO getUserByUsername(String username) {
@@ -82,8 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             if (inserted < 1) {
                 throw new ClientException(USER_SAVE_ERROR);
             }
-            // TODO 短链接分组
-//            groupService.saveGroup(requestParam.getUsername(), "默认分组");
+            groupService.saveGroup(requestParam.getUsername(), "默认分组");
             userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
         } catch (DuplicateKeyException ex) {
             throw new ClientException(USER_EXIST);
