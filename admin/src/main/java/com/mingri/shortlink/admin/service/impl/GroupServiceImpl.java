@@ -1,5 +1,6 @@
 package com.mingri.shortlink.admin.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mingri.shortlink.admin.common.biz.user.UserContext;
 import com.mingri.shortlink.admin.common.convention.exception.ClientException;
 import com.mingri.shortlink.admin.common.convention.exception.ServiceException;
+import com.mingri.shortlink.admin.common.convention.result.Result;
 import com.mingri.shortlink.admin.dao.entity.GroupDO;
 import com.mingri.shortlink.admin.dao.entity.GroupUniqueDO;
 import com.mingri.shortlink.admin.dao.mapper.GroupMapper;
@@ -16,6 +18,8 @@ import com.mingri.shortlink.admin.dao.mapper.GroupUniqueMapper;
 import com.mingri.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.mingri.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
 import com.mingri.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
+import com.mingri.shortlink.admin.remote.dto.ShortLinkActualRemoteService;
+import com.mingri.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.mingri.shortlink.admin.service.GroupService;
 import com.mingri.shortlink.admin.toolkit.RandomGenerator;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.mingri.shortlink.admin.common.constant.RedisCacheConstant.LOCK_GROUP_CREATE_KEY;
 
@@ -43,6 +49,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     private final RBloomFilter<String> gidRegisterCachePenetrationBloomFilter;
     private final GroupUniqueMapper groupUniqueMapper;
     private final RedissonClient redissonClient;
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
 
     @Value("${short-link.group.max-num}")
     private Integer groupMaxNum;
@@ -92,8 +99,21 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public List<ShortLinkGroupRespDTO> listGroup() {
-        // TODO 查询用户短链接分组集合
-        return null;
+        LambdaQueryWrapper<GroupDO> queryWrapper = Wrappers.lambdaQuery(GroupDO.class)
+                .eq(GroupDO::getDelFlag, 0)
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .orderByDesc(GroupDO::getSortOrder, GroupDO::getUpdateTime);
+        List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
+        Result<List<ShortLinkGroupCountQueryRespDTO>> listResult = shortLinkActualRemoteService
+                .listGroupShortLinkCount(groupDOList.stream().map(GroupDO::getGid).toList());
+        List<ShortLinkGroupRespDTO> shortLinkGroupRespDTOList = BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
+        shortLinkGroupRespDTOList.forEach(each -> {
+            Optional<ShortLinkGroupCountQueryRespDTO> first = listResult.getData().stream()
+                    .filter(item -> Objects.equals(item.getGid(), each.getGid()))
+                    .findFirst();
+            first.ifPresent(item -> each.setShortLinkCount(first.get().getShortLinkCount()));
+        });
+        return shortLinkGroupRespDTOList;
     }
 
 
