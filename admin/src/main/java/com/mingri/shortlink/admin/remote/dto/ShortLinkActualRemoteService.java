@@ -2,6 +2,9 @@ package com.mingri.shortlink.admin.remote.dto;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mingri.shortlink.admin.config.OpenFeignConfiguration;
+import com.mingri.shortlink.admin.dto.req.RecycleBinRecoverReqDTO;
+import com.mingri.shortlink.admin.dto.req.RecycleBinRemoveReqDTO;
+import com.mingri.shortlink.admin.dto.req.RecycleBinSaveReqDTO;
 import com.mingri.shortlink.admin.remote.dto.req.ShortLinkBatchCreateReqDTO;
 import com.mingri.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.mingri.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
@@ -76,6 +79,53 @@ public interface ShortLinkActualRemoteService {
     @GetMapping("/api/short-link/v1/count")
     Result<List<ShortLinkGroupCountQueryRespDTO>> listGroupShortLinkCount(@RequestParam("requestParam") List<String> requestParam);
 
+
+
+    /**
+     * 根据 URL 获取标题
+     *
+     * @param url 目标网站地址
+     * @return 网站标题
+     */
+    @GetMapping("/api/short-link/v1/title")
+    Result<String> getTitleByUrl(@RequestParam("url") String url);
+
+    /**
+     * 保存回收站
+     *
+     * @param requestParam 请求参数
+     */
+    @PostMapping("/api/short-link/v1/recycle-bin/save")
+    void saveRecycleBin(@RequestBody RecycleBinSaveReqDTO requestParam);
+
+    /**
+     * 分页查询回收站短链接
+     *
+     * @param gidList 分组标识集合
+     * @param current 当前页
+     * @param size    当前数据多少
+     * @return 查询短链接响应
+     */
+    @GetMapping("/api/short-link/v1/recycle-bin/page")
+    Result<Page<ShortLinkPageRespDTO>> pageRecycleBinShortLink(@RequestParam("gidList") List<String> gidList,
+                                                               @RequestParam("current") Long current,
+                                                               @RequestParam("size") Long size);
+
+    /**
+     * 恢复短链接
+     *
+     * @param requestParam 短链接恢复请求参数
+     */
+    @PostMapping("/api/short-link/v1/recycle-bin/recover")
+    void recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam);
+
+    /**
+     * 移除短链接
+     *
+     * @param requestParam 短链接移除请求参数
+     */
+    @PostMapping("/api/short-link/v1/recycle-bin/remove")
+    void removeRecycleBin(@RequestBody RecycleBinRemoveReqDTO requestParam);
 
 
 
